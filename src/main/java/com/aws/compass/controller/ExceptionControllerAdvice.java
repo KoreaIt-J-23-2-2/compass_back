@@ -1,5 +1,6 @@
 package com.aws.compass.controller;
 
+import com.aws.compass.exception.AcademyException;
 import com.aws.compass.exception.DuplicateException;
 import com.aws.compass.exception.SendMailException;
 import com.aws.compass.exception.ValidException;
@@ -62,6 +63,13 @@ public class ExceptionControllerAdvice {
         Map<String, String> message = new HashMap<>();
         message.put("jwt", "인증이 유효하지 않습니다.");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(message);
+    }
+
+    @ExceptionHandler(AcademyException.class)
+    public ResponseEntity<?> AcademyExcetion(AcademyException academyException){
+        Map<String, String> message = new HashMap<>();
+       message.put("sendFail", "이미 등록된 학원입니다.");
+       return ResponseEntity.status(HttpStatus.FORBIDDEN).body(message);
     }
 
 }

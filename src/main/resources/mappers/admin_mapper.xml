@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aws.compass.repository.AdminMapper">
+    <resultMap id="academyRegistrationMap" type="com.aws.compass.entity.AcademyRegistration">
+        <id property="academyRegistrationId" column="academy_registration_id"/>
+        <result property="academyId" column="ACADEMY_ID"/>
+        <result property="acaAsnum" column="ACA_ASNUM"/>
+        <result property="acaNm" column="ACA_NM"/>
+        <result property="admstZoneNm" column="ADMST_ZONE_NM"/>
+        <result property="match" column="match"/>
+        <result property="userId" column="user_id"/>
+        <result property="name" column="name"/>
+        <result property="businessRegistrationFile" column="business_registration_file"/>
+        <result property="idFile" column="id_file"/>
+        <result property="operationRegistrationFile" column="operation_registration_file"/>
+    </resultMap>
+    <update id="updateApprovalState">
+        update
+            academy_registration_tb
+        set
+            approval_status = 1
+        where
+            academy_registration_id = #{academyRegistrationId}
+    </update>
+    <update id="updateUserRole">
+        update
+            user_tb
+        set
+            role_id = 2
+        where
+            user_id = #{userId}
+    </update>
+    <delete id="deleteByAcademyRegistrationId">
+        delete from
+            academy_registration_tb
+        where
+            academy_registration_id = #{academyRegistrationId}
+    </delete>
+
+    <select id="getAwaitingAcademies" resultMap="academyRegistrationMap">
+        select
+            art.academy_registration_id,
+            art.ACADEMY_ID,
+            at.ACA_ASNUM,
+            at.ACA_NM,
+            at.ADMST_ZONE_NM,
+            art.match,
+            art.user_id,
+            ut.name,
+            art.business_registration_file,
+            art.id_file,
+            art.operation_registration_file
+        from
+            academy_registration_tb art
+                left outer join academy_tb at on(at.ACADEMY_ID = art.ACADEMY_ID)
+                left outer join user_tb ut on(ut.user_id = art.user_id)
+        where
+            art.approval_status = 0
+        order by
+            art.academy_registration_id desc
+        limit #{index}, 5
+    </select>
+    <select id="getAwaitingAcademyCount" resultType="java.lang.Integer">
+        select
+            count(*)
+        from
+            academy_registration_tb art
+            left outer join user_tb ut on(ut.user_id = art.user_id)
+        where
+            art.approval_status = 0
+    </select>
+</mapper>

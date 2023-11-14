@@ -6,10 +6,7 @@ import lombok.Data;
 
 @Data
 public class AcademyRegistrationReqDto {
-    private String acaAsnum;
-    private String acaNm;
-    private String admstZoneNm;
-    private String atptOfcdcScCode;
+    private int academyId;
     private String match;
     private int userId;
     private String businessRegistrationFile;
@@ -18,10 +15,7 @@ public class AcademyRegistrationReqDto {
 
     public AcademyRegistration toAcademyRegist() {
         return AcademyRegistration.builder()
-                .acaAsnum(acaAsnum)
-                .acaNm(acaNm)
-                .admstZoneNm(admstZoneNm)
-                .atptOfcdcScCode(atptOfcdcScCode)
+                .academyId(academyId)
                 .match(match)
                 .userId(userId)
                 .businessRegistrationFile(businessRegistrationFile)

@@ -8,8 +8,24 @@
         <id property="educationOfficeId" column="education_office_id" />
         <id property="educationOfficeName" column="education_office_name" />
         <id property="educationOfficeCode" column="education_office_code" />
-
     </resultMap>
+    <resultMap id="administrativeDistrictMap" type="com.aws.compass.entity.AdministrativeDistrict">
+        <id property="administrativeDistrictId" column="administrative_district_id" />
+        <id property="educationOfficeCode" column="education_office_code" />
+        <id property="administrativeDistrictName" column="administrative_district_name" />
+    </resultMap>
+    <resultMap id="categoryMap" type="com.aws.compass.entity.Category">
+        <id property="categoryId" column="category_id" />
+        <id property="categoryValue" column="category_value" />
+        <id property="categoryName" column="category_name" />
+    </resultMap>
+    <resultMap id="categoryDetailMap" type="com.aws.compass.entity.CategoryDetail">
+        <id property="categoryDetailId" column="category_detail_id" />
+        <id property="categoryValue" column="category_value" />
+        <id property="categoryDetailValue" column="category_detail_value" />
+        <id property="categoryDetailName" column="category_detail_name" />
+    </resultMap>
+
 
     <select id="getEducationOfficeList" resultMap="educationOfficeMap">
         select
@@ -20,5 +36,31 @@
             education_office_tb
     </select>
 
+    <select id="getAdministrativeDistrictList"   resultMap="administrativeDistrictMap">
+        select
+            administrative_district_id,
+            education_office_code,
+            administrative_district_name
+        from
+            administrative_district_tb
+    </select>
+
+    <select id="getCategoryList" resultMap="categoryMap">
+        select
+            category_id,
+            category_value,
+            category_name
+        from
+            category_tb
+    </select>
+    <select id="getCategoryDetailList" resultMap="categoryDetailMap">
+        select
+            category_detail_id,
+            category_value,
+            category_detail_value,
+            category_detail_name
+        from
+            category_detail_tb
+    </select>
 
 </mapper>

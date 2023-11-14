@@ -4,27 +4,129 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.aws.compass.repository.AcademyMapper">
 
+    <select id="getListTotalCount" resultType="int" parameterType="com.aws.compass.vo.AcademySearchVo">
+        select
+            count(*)
+        from
+            academy_tb
+        where
+            1 = 1
+            <if test="atptOfcdcScCode!=null and !atptOfcdcScCode.equals('')">
+                and ATPT_OFCDC_SC_CODE = #{atptOfcdcScCode}
+            </if>
+            <if test="admstZoneNm!=null and !admstZoneNm.equals('')">
+                and ADMST_ZONE_NM = #{admstZoneNm}
+            </if>
+            <if test="acaAsnum!=null and !acaAsnum.equals('')">
+                and ACA_ASNUM = #{acaAsnum}
+            </if>
+            <if test="acaNm!=null and !acaNm.equals('')">
+                and ACA_NM LIKE CONCAT('%', #{acaNm}, '%')
+            </if>
+            <if test="realmScNm!=null and !realmScNm.equals('')">
+                and REALM_SC_NM = #{realmScNm}
+            </if>
+            <if test="leOrdNm!=null and !leOrdNm.equals('')">
+                and LE_ORD_NM = #{leOrdNm}
+            </if>
+            <if test="leCrseNm!=null and !leCrseNm.equals('')">
+                and LE_CRSE_NM = #{leCrseNm}
+            </if>
+    </select>
+
+    <select id="getAcademies" parameterType="com.aws.compass.vo.AcademySearchVo" resultType="com.aws.compass.entity.Academy">
+        SELECT
+            ACADEMY_ID,
+            ATPT_OFCDC_SC_CODE,
+            ATPT_OFCDC_SC_NM,
+            ADMST_ZONE_NM,
+            ACA_INSTI_SC_NM,
+            ACA_ASNUM,
+            ACA_NM,
+            ESTBL_YMD,
+            REG_YMD,
+            REG_STTUS_NM,
+            CAA_BEGIN_YMD,
+            CAA_END_YMD,
+            TOFOR_SMTOT,
+            DTM_RCPTN_ABLTY_NMPR_SMTOT,
+            REALM_SC_NM,
+            LE_ORD_NM,
+            LE_CRSE_LIST_NM,
+            LE_CRSE_NM,
+            PSNBY_THCC_CNTNT,
+            THCC_OTHBC_YN,
+            BRHS_ACA_YN,
+            FA_RDNMA,
+            FA_RDNDA,
+            FA_RDNZC,
+            FA_TELNO,
+            LOAD_DTM
+        FROM
+            academy_tb
+        where
+            1 = 1
+        <if test="atptOfcdcScCode!=null and !atptOfcdcScCode.equals('')">
+            and ATPT_OFCDC_SC_CODE = #{atptOfcdcScCode}
+        </if>
+        <if test="admstZoneNm!=null and !admstZoneNm.equals('')">
+            and ADMST_ZONE_NM = #{admstZoneNm}
+        </if>
+        <if test="acaAsnum!=null and !acaAsnum.equals('')">
+            and ACA_ASNUM = #{acaAsnum}
+        </if>
+        <if test="acaNm!=null and !acaNm.equals('')">
+            and ACA_NM LIKE CONCAT('%', #{acaNm}, '%')
+        </if>
+        <if test="realmScNm!=null and !realmScNm.equals('')">
+            and REALM_SC_NM = #{realmScNm}
+        </if>
+        <if test="leOrdNm!=null and !leOrdNm.equals('')">
+            and LE_ORD_NM = #{leOrdNm}
+        </if>
+        <if test="leCrseNm!=null and !leCrseNm.equals('')">
+            and LE_CRSE_NM = #{leCrseNm}
+        </if>
+        limit #{index}, #{pSize}
+    </select>
 
     <insert id="academyRegist" parameterType="com.aws.compass.entity.AcademyRegistration">
         insert into academy_registration_tb
         values(
             0,
-            #{acaAsnum},
-            #{acaNm},
-            #{admstZoneNm},
-            #{atptOfcdcScCode},
+            #{academyId},
             #{match},
             #{userId},
             #{businessRegistrationFile},
             #{idFile},
             <choose>
                 <when test='operationRegistrationFile==null or operationRegistrationFile.equals("")'>
-                    ""
+                    '',
                 </when>
                 <otherwise>
-                    #{operationRegistrationFile}
+                    #{operationRegistrationFile},
                 </otherwise>
             </choose>
+            0
         )
     </insert>
+    <select id="academyDuplicate" resultType="java.lang.Integer">
+        select
+        	if(count(*) > 1, 1, 0) as result
+        from
+        	academy_registration_tb
+        where
+        	ACADEMY_ID = #{academyId};
+    </select>
+    <select id="getAcademy" resultType="com.aws.compass.entity.Academy">
+        select
+            ACADEMY_ID,
+            ACA_NM,
+            FA_RDNMA,
+            FA_RDNDA
+        from
+            academy_tb
+        where
+            ACADEMY_ID = #{ACADEMY_ID}
+    </select>
 </mapper>
