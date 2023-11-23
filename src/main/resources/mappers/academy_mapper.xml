@@ -30,6 +30,7 @@
         <result property="FA_RDNZC" column="FA_RDNZC" />
         <result property="FA_TELNO" column="FA_TELNO" />
         <result property="LOAD_DTM" column="LOAD_DTM" />
+        <result property="logoImg" column="logo_img" />
     </resultMap>
 
     <resultMap id="academyRegistrationMap" type="com.aws.compass.entity.AcademyRegistration">
@@ -108,15 +109,33 @@
         update
             academy_info_tb
         set
-            logo_img = #{logo_img},
-            class_size = #{class_size},
-            course_period = #{course_period},
+            logo_img = #{logoImg},
+            class_size = #{classSize},
+            course_period = #{coursePeriod},
             purpose = #{purpose},
-            home_page = #{home_page},
+            home_page = #{homePage},
             phone = #{phone}
         where
-            academy_info_id = #{academy_info_id}
+            academy_info_id = #{academyInfoId}
     </update>
+    <delete id="deleteConvenience">
+        delete from
+            academy_convenience_tb
+        where
+            academy_info_id = #{academy_info_id}
+    </delete>
+    <delete id="deleteAge">
+        delete from
+            attendance_age_tb
+        where
+            academy_info_id = #{academy_info_id}
+    </delete>
+    <delete id="deleteClassInfo">
+        delete from
+            class_info_tb
+        where
+            academy_info_id = #{academy_info_id}
+    </delete>
 
     <update id="updateReview">
         update
@@ -205,59 +224,61 @@
 
     <select id="getAcademies" parameterType="com.aws.compass.vo.AcademySearchVo" resultMap="academyMap">
         SELECT
-            ACADEMY_ID,
-            ATPT_OFCDC_SC_CODE,
-            ATPT_OFCDC_SC_NM,
-            ADMST_ZONE_NM,
-            ACA_INSTI_SC_NM,
-            ACA_ASNUM,
-            ACA_NM,
-            ESTBL_YMD,
-            REG_YMD,
-            REG_STTUS_NM,
-            CAA_BEGIN_YMD,
-            CAA_END_YMD,
-            TOFOR_SMTOT,
-            DTM_RCPTN_ABLTY_NMPR_SMTOT,
-            REALM_SC_NM,
-            LE_ORD_NM,
-            LE_CRSE_LIST_NM,
-            LE_CRSE_NM,
-            PSNBY_THCC_CNTNT,
-            THCC_OTHBC_YN,
-            BRHS_ACA_YN,
-            FA_RDNMA,
-            FA_RDNDA,
-            FA_RDNZC,
-            FA_TELNO,
-            LOAD_DTM
+            at.ACADEMY_ID,
+            at.ATPT_OFCDC_SC_CODE,
+            at.ATPT_OFCDC_SC_NM,
+            at.ADMST_ZONE_NM,
+            at.ACA_INSTI_SC_NM,
+            at.ACA_ASNUM,
+            at.ACA_NM,
+            at.ESTBL_YMD,
+            at.REG_YMD,
+            at.REG_STTUS_NM,
+            at.CAA_BEGIN_YMD,
+            at.CAA_END_YMD,
+            at.TOFOR_SMTOT,
+            at.DTM_RCPTN_ABLTY_NMPR_SMTOT,
+            at.REALM_SC_NM,
+            at.LE_ORD_NM,
+            at.LE_CRSE_LIST_NM,
+            at.LE_CRSE_NM,
+            at.PSNBY_THCC_CNTNT,
+            at.THCC_OTHBC_YN,
+            at.BRHS_ACA_YN,
+            at.FA_RDNMA,
+            at.FA_RDNDA,
+            at.FA_RDNZC,
+            at.FA_TELNO,
+            at.LOAD_DTM,
+            ait.logo_img
         FROM
-            academy_tb
+            academy_tb at
+                left outer join academy_info_tb ait on(ait.ACADEMY_ID = at.ACADEMY_ID)
         WHERE
             1 = 1
             <if test="atptOfcdcScCode != null and !atptOfcdcScCode.equals('')">
-                AND ATPT_OFCDC_SC_CODE = #{atptOfcdcScCode}
+                AND at.ATPT_OFCDC_SC_CODE = #{atptOfcdcScCode}
             </if>
             <if test="admstZoneNm != null and !admstZoneNm.equals('')">
-                AND ADMST_ZONE_NM = #{admstZoneNm}
+                AND at.ADMST_ZONE_NM = #{admstZoneNm}
             </if>
             <if test="acaAsnum != null and !acaAsnum.equals('')">
-                AND ACA_ASNUM = #{acaAsnum}
+                AND at.ACA_ASNUM = #{acaAsnum}
             </if>
             <if test="acaNm != null and !acaNm.equals('')">
-                AND ACA_NM LIKE CONCAT('%', #{acaNm}, '%')
+                AND at.ACA_NM LIKE CONCAT('%', #{acaNm}, '%')
             </if>
             <if test="realmScNm != null and !realmScNm.equals('')">
-                AND REALM_SC_NM = #{realmScNm}
+                AND at.REALM_SC_NM = #{realmScNm}
             </if>
             <if test="leOrdNm != null and !leOrdNm.equals('')">
-                AND LE_ORD_NM = #{leOrdNm}
+                AND at.LE_ORD_NM = #{leOrdNm}
             </if>
             <if test="leCrseNm != null and !leCrseNm.equals('')">
-                AND LE_CRSE_NM = #{leCrseNm}
+                AND at.LE_CRSE_NM = #{leCrseNm}
             </if>
             <if test="ageIds != null and !ageIds.isEmpty()">
-                AND ACADEMY_ID IN (
+                AND at.ACADEMY_ID IN (
                     SELECT
                         ait.ACADEMY_ID
                     FROM
@@ -276,7 +297,7 @@
                 )
             </if>
             <if test="convenienceIds != null and !convenienceIds.isEmpty()">
-                AND ACADEMY_ID IN (
+                AND at.ACADEMY_ID IN (
                     SELECT
                         ait.ACADEMY_ID
                     FROM
@@ -323,6 +344,22 @@
         insert into review_tb
         values(0, #{ACADEMY_ID}, #{userId}, #{score}, #{reviewContent});
     </insert>
+    <insert id="insertAcademyInfo">
+        insert into academy_info_tb
+        values(0, #{ACADEMY_ID}, #{userId}, #{logoImg}, #{classSize}, #{coursePeriod}, #{purpose}, #{homePage}, #{phone})
+    </insert>
+    <insert id="insertConvenience">
+        insert into academy_convenience_tb
+        values(0, #{academyInfoId}, #{convenienceId})
+    </insert>
+    <insert id="insertAge">
+        insert into attendance_age_tb
+        values(0, #{academyInfoId}, #{ageId})
+    </insert>
+    <insert id="insertClassInfo">
+        insert into class_info_tb
+        values(0, #{academyInfoId}, #{classInfo.className}, #{classInfo.classPrice})
+    </insert>
 
     <select id="academyDuplicate" resultType="java.lang.Integer">
         select
@@ -352,6 +389,7 @@
         select
             ait.ACADEMY_ID,
             ait.academy_info_id,
+            ait.user_id,
         	ait.logo_img,
         	ait.class_size,
         	ait.course_period,
@@ -518,5 +556,31 @@
             left outer join user_tb ut on(ut.user_id = rt.user_id)
         where
             rt.ACADEMY_ID = #{academyId} and rt.user_id = #{userId};
+    </select>
+    <select id="getRegisteredAcademy" resultType="java.lang.Integer">
+        select
+            count(*)
+        from
+            academy_info_tb
+        where
+            ACADEMY_ID = #{academyId}
+    </select>
+    <select id="getAcademyByuserId" resultType="com.aws.compass.entity.Academy">
+        select
+            ait.ACADEMY_ID,
+            at.ACA_NM
+        from
+            academy_info_tb ait
+            left outer join academy_tb at on(at.ACADEMY_ID = ait.ACADEMY_ID)
+        where
+            ait.user_id = #{userId}
+    </select>
+    <select id="getAcademyLogoImg" resultType="java.lang.String">
+        select
+            logo_img
+        from
+            academy_info_tb
+        where
+            ACADEMY_ID = #{ACADEMY_ID}
     </select>
 </mapper>

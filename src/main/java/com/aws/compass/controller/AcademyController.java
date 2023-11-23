@@ -7,6 +7,7 @@ import com.aws.compass.dto.SearchAcademysReqDto;
 import com.aws.compass.dto.EditAcademyInfoReqDto;
 import com.aws.compass.service.AcademyService;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.apache.bcel.generic.ClassGen;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -55,10 +56,20 @@ public class AcademyController {
         return ResponseEntity.ok(academyService.getMyAcademies(userId, page));
     }
 
+    @GetMapping("/api/academies/{userId}")
+    public ResponseEntity<?> getMyAcademyNames(@PathVariable int userId) {
+        return ResponseEntity.ok(academyService.getMyAcademyNames(userId));
+    }
+
     //상세페이지 - 후기 가져오기
     @GetMapping("/api/academy/{academyId}/reviews")
     public ResponseEntity<?> getAcademyReviews(@PathVariable int academyId) {
         return ResponseEntity.ok(academyService.getAcademyReviews(academyId));
+    }
+
+    @GetMapping("/api/academy/check/{academyId}")
+    public ResponseEntity<?> isAcademyAdminRegistered(@PathVariable int academyId) {
+        return ResponseEntity.ok(academyService.isAcademyRegistered(academyId));
     }
 
     @PutMapping("/api/academy")
@@ -66,12 +77,18 @@ public class AcademyController {
         return ResponseEntity.ok(academyService.editAcademyInfo(editAcademyInfoReqDto));
     }
 
+    @PostMapping("/api/academyInfo/{ACADEMY_ID}")
+    public ResponseEntity<?> addAcademyInfo(@RequestBody EditAcademyInfoReqDto editAcademyInfoReqDto) {
+        return ResponseEntity.ok(academyService.addAcademyInfo(editAcademyInfoReqDto));
+    }
+
     //상세페이지 - 후기 쓰기
     @PostMapping("/api/review")
     public ResponseEntity<?> writeReview(@RequestBody ReviewReqDto reviewReqDto) {
         return ResponseEntity.ok(academyService.writeReview(reviewReqDto));
-    }
 
+    }
+  
     //상세페이지 - 내 후기 수정버튼 클릭 시 가져오기
     @GetMapping("/api/review/{academyId}/{userId}")
     public ResponseEntity<?> getMyReview(@PathVariable int academyId, @PathVariable int userId) {

@@ -24,6 +24,37 @@
         <result property="academyName" column="ACA_NM" />
     </resultMap>
 
+    </resultMap>
+    <resultMap id="academyMap" type="com.aws.compass.entity.Academy">
+        <id property="ACADEMY_ID" column="ACADEMY_ID" />
+        <result property="ATPT_OFCDC_SC_CODE" column="ATPT_OFCDC_SC_CODE" />
+        <result property="ATPT_OFCDC_SC_NM" column="ATPT_OFCDC_SC_NM" />
+        <result property="ADMST_ZONE_NM" column="ADMST_ZONE_NM" />
+        <result property="ACA_INSTI_SC_NM" column="ACA_INSTI_SC_NM" />
+        <result property="ACA_ASNUM" column="ACA_ASNUM" />
+        <result property="ACA_NM" column="ACA_NM" />
+        <result property="ESTBL_YMD" column="ESTBL_YMD" />
+        <result property="REG_YMD" column="REG_YMD" />
+        <result property="REG_STTUS_NM" column="REG_STTUS_NM" />
+        <result property="CAA_BEGIN_YMD" column="CAA_BEGIN_YMD" />
+        <result property="CAA_END_YMD" column="CAA_END_YMD" />
+        <result property="TOFOR_SMTOT" column="TOFOR_SMTOT" />
+        <result property="DTM_RCPTN_ABLTY_NMPR_SMTOT" column="DTM_RCPTN_ABLTY_NMPR_SMTOT" />
+        <result property="REALM_SC_NM" column="REALM_SC_NM" />
+        <result property="LE_ORD_NM" column="LE_ORD_NM" />
+        <result property="LE_CRSE_LIST_NM" column="LE_CRSE_LIST_NM" />
+        <result property="LE_CRSE_NM" column="LE_CRSE_NM" />
+        <result property="PSNBY_THCC_CNTNT" column="PSNBY_THCC_CNTNT" />
+        <result property="THCC_OTHBC_YN" column="THCC_OTHBC_YN" />
+        <result property="BRHS_ACA_YN" column="BRHS_ACA_YN" />
+        <result property="FA_RDNMA" column="FA_RDNMA" />
+        <result property="FA_RDNDA" column="FA_RDNDA" />
+        <result property="FA_RDNZC" column="FA_RDNZC" />
+        <result property="FA_TELNO" column="FA_TELNO" />
+        <result property="LOAD_DTM" column="LOAD_DTM" />
+        <result property="logoImg" column="logo_img" />
+    </resultMap>
+
     <insert id="insertLike">
         insert into like_tb
         values(0, #{userId}, #{academyId})
@@ -121,7 +152,7 @@
     </select>
 
     <select id="getLikeAcademies"
-            resultType="com.aws.compass.entity.Academy">
+            resultMap="academyMap">
         select
             at.ACADEMY_ID,
             at.ACA_NM,

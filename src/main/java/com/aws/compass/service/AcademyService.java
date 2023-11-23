@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -72,14 +73,46 @@ public class AcademyService {
     public ReviewListRespDto getAcademyReviews(int academyId) {
         return new ReviewListRespDto(academyMapper.getAcademyReviews(academyId), academyMapper.getAcademyReviewCount(academyId));
     }
+  
+    public List<MyAcademyNamesRespDto> getMyAcademyNames(int userId) {
+        List<MyAcademyNamesRespDto> myAcademyNamesRespDtos = new ArrayList<>();
+        academyMapper.getAcademyByuserId(userId).forEach(academy -> myAcademyNamesRespDtos.add(academy.toMyAcademyNamesRespDto()));
+        return myAcademyNamesRespDtos;
+    }
 
+    public ReviewRespDto getAcademyReviews(int academyId) {
+        return new ReviewRespDto(academyMapper.getAcademyReviews(academyId), academyMapper.getAcademyReviewCount(academyId));
+    }
+
+    @Transactional(rollbackFor = Exception.class)
     public boolean editAcademyInfo(EditAcademyInfoReqDto editAcademyInfoReqDto) {
-        Academy academy = editAcademyInfoReqDto.getAcademy();
         AcademyInfo academyInfo = editAcademyInfoReqDto.getAcademyInfo();
-        List<String> convenienceInfo = editAcademyInfoReqDto.getConvenienceInfo();
-        List<String> ageRange = editAcademyInfoReqDto.getAgeRange();
-        List<ClassInfo> classInfo = editAcademyInfoReqDto.getClassInfo();
-        return academyMapper.updateAcademyInfo(academyInfo) > 0;
+        academyMapper.updateAcademyInfo(academyInfo);
+
+        List<Age> ages = editAcademyInfoReqDto.getAge();
+        academyMapper.deleteAge(academyInfo.getAcademyInfoId());
+        ages.forEach(age -> {
+            academyMapper.insertAge(academyInfo.getAcademyInfoId(), age.getAgeId());
+        });
+
+        List<Convenience> conveniences = editAcademyInfoReqDto.getConvenience();
+        academyMapper.deleteConvenience(academyInfo.getAcademyInfoId());
+        conveniences.forEach(convenience -> {
+            academyMapper.insertConvenience(academyInfo.getAcademyInfoId(), convenience.getConvenienceId());
+        });
+
+        List<ClassInfo> classInfos = editAcademyInfoReqDto.getClassInfo();
+        academyMapper.deleteClassInfo(academyInfo.getAcademyInfoId());
+        classInfos.forEach(classInfo -> {
+            academyMapper.insertClassInfo(academyInfo.getAcademyInfoId(), classInfo);
+        });
+        return true;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public boolean addAcademyInfo(EditAcademyInfoReqDto editAcademyInfoReqDto) {
+        AcademyInfo academyInfo = editAcademyInfoReqDto.getAcademyInfo();
+        return academyMapper.insertAcademyInfo(academyInfo) > 0;
     }
   
     public boolean writeReview(ReviewReqDto reviewReqDto) {
@@ -101,6 +134,10 @@ public class AcademyService {
 
     public boolean deleteReview(int academyId, int userId) {
         return academyMapper.deleteReview(academyId, userId) > 0;
+    }
+  
+    public boolean isAcademyRegistered(int academyId) {
+        return academyMapper.getRegisteredAcademy(academyId) > 0;
     }
 }
 

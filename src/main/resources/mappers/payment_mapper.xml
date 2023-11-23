@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aws.compass.repository.PaymentMapper">
+    <resultMap id="productMap" type="com.aws.compass.entity.Product">
+        <id property="productId" column="product_id"/>
+        <result property="productName" column="product_Name"/>
+        <result property="productPrice" column="product_price"/>
+        <result property="productPeriod" column="product_period"/>
+        <result property="purchaseDate" column="purchase_date"/>
+    </resultMap>
+
+    <resultMap id="purchaseMap" type="com.aws.compass.entity.Purchase">
+        <id property="purchaseInfoId" column="purchase_info_id"/>
+        <result property="academyId" column="academy_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="productId" column="product_id"/>
+        <result property="purchaseDate" column="purchase_date"/>
+    </resultMap>
+
+    <insert id="savePurchase" parameterType="com.aws.compass.entity.Purchase">
+        insert into purchase_info_tb
+        values(0, #{academyId}, #{userId}, #{productId}, CONVERT_TZ(NOW(), 'UTC', 'Asia/Seoul'))
+    </insert>
+
+    <select id="getProducts"
+            resultMap="productMap">
+        select
+            pt.product_id,
+            pt.product_name,
+            pt.product_price,
+            pt.product_period
+        from
+            product_tb pt
+    </select>
+
+    <select id="checkPurchase" resultMap="productMap">
+        SELECT
+            pit.purchase_date,
+            pt.product_name,
+            pt.product_period,
+            pt.product_price
+        FROM
+            purchase_info_tb pit
+            left outer join product_tb pt on(pt.product_id = pit.product_id)
+        where
+            user_id = #{userId}
+            and ACADEMY_ID = #{academyId}
+            and now() <![CDATA[ <= ]]> date_add(purchase_date, interval pt.product_period DAY)
+    </select>
+</mapper>

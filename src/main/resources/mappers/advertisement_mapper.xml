@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aws.compass.repository.AdvertisementMapper">
+
+    <select id="getADOfRandomAcademies"
+            resultType="com.aws.compass.entity.Academy">
+        select
+            pit.ACADEMY_ID,
+            at.ACA_NM,
+            at.FA_RDNMA,
+            at.FA_RDNDA,
+            at.REALM_SC_NM,
+            at.LE_CRSE_LIST_NM,
+            at.FA_TELNO
+        from
+            purchase_info_tb pit
+            left outer join product_tb pt on(pt.product_id = pit.product_id)
+            left outer join academy_tb at on(at.ACADEMY_ID = pit.ACADEMY_ID)
+        where
+            now() <![CDATA[ <= ]]> date_add(purchase_date, interval pt.product_period DAY)
+        ORDER BY RAND()
+        LIMIT 3;
+    </select>
+
+</mapper>

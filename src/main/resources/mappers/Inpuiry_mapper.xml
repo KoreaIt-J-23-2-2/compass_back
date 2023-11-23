@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aws.compass.repository.InpuiryMapper">
+    <resultMap id="getUserInquiryMap" type="com.aws.compass.entity.Inquiry">
+        <id property="inquiryId" column="inquiry_id"></id>
+        <result property="acaNm" column="ACA_NM"></result>
+        <result property="inquiryTitle" column="inquiry_title"></result>
+        <result property="inquiryContent" column="inquiry_content"></result>
+        <result property="answer" column="answer"></result>
+        <result property="answerChecked" column="answer_checked"></result>
+    </resultMap>
+    <resultMap id="getAcademyInquiryMap" type="com.aws.compass.entity.AcademyInquiry">
+        <id property="inquiryId" column="inquiry_id"></id>
+        <result property="academyId" column="ACADEMY_ID"></result>
+        <result property="acaNm" column="ACA_NM"></result>
+        <result property="nickname" column="nickname"></result>
+        <result property="inquiryTitle" column="inquiry_title"></result>
+        <result property="inquiryContent" column="inquiry_content"></result>
+        <result property="answer" column="answer"></result>
+        <result property="answerChecked" column="answer_checked"></result>
+    </resultMap>
+
+    <insert id="saveInpuiry" parameterType="com.aws.compass.entity.Inquiry">
+        insert into inquiry_tb
+        value(0, #{userId}, #{academyId}, #{inquiryTitle}, #{inquiryContent}, #{answer}, #{answerChecked})
+    </insert>
+    <update id="updateInquiry">
+        update inquiry_tb
+        set
+            answer= #{answer},
+            answer_checked = #{answerChecked}
+        where
+            inquiry_id = #{inquiryId}
+    </update>
+    <update id="updateAnswerChecked">
+        update inquiry_tb
+        set
+            answer_checked = #{answerChecked}
+        where
+            inquiry_id = #{inquiryId}
+    </update>
+
+    <select id="getUserInquiries" resultMap="getUserInquiryMap">
+        SELECT
+            it.inquiry_id,
+            at.ACA_NM,
+            it.inquiry_title,
+            it.inquiry_content,
+            it.answer,
+            it.answer_checked
+        FROM
+            inquiry_tb it
+            LEFT OUTER JOIN academy_tb at ON (at.ACADEMY_ID = it.ACADEMY_ID)
+        WHERE
+            user_id = #{userId}
+        ORDER BY
+            it.inquiry_id DESC
+        LIMIT #{index}, 5
+    </select>
+    <select id="getUserInquiriesCount" resultType="java.lang.Integer">
+        select
+            count(*)
+        FROM
+            inquiry_tb it
+            left outer join academy_tb at on(at.ACADEMY_ID = it.ACADEMY_ID)
+        WHERE
+            user_id = #{userId}
+    </select>
+    <select id="getAcademyInquiries" resultMap="getAcademyInquiryMap">
+        SELECT
+            it.inquiry_id,
+            it.ACADEMY_ID,
+            at.ACA_NM,
+            ut.nickname,
+            it.inquiry_title,
+            it.inquiry_content,
+            it.answer,
+            it.answer_checked
+        FROM
+            inquiry_tb it
+            LEFT OUTER JOIN academy_tb at ON (at.ACADEMY_ID = it.ACADEMY_ID)
+            LEFT OUTER JOIN academy_info_tb aif ON(aif.ACADEMY_ID = it.ACADEMY_ID)
+            LEFT OUTER JOIN user_tb ut ON(ut.user_id = it.user_id)
+        where
+            aif.user_id = #{userId}
+            <if test="academyId != null and !academyId.equals('') and !academyId.equals(0)">
+                and it.ACADEMY_ID = #{academyId}
+            </if>
+            <if test="unansweredOnly.equals(1)">
+                AND it.answer IS NULL
+            </if>
+        order by
+            it.inquiry_id desc
+        LIMIT #{index}, 5
+    </select>
+    <select id="getAcademyInquiriesCount" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM
+            inquiry_tb it
+            LEFT OUTER JOIN academy_tb at ON (at.ACADEMY_ID = it.ACADEMY_ID)
+            LEFT OUTER JOIN academy_info_tb aif ON(aif.ACADEMY_ID = it.ACADEMY_ID)
+            LEFT OUTER JOIN user_tb ut ON(ut.user_id = it.user_id)
+        where
+            aif.user_id = #{userId}
+            <if test="academyId != null and !academyId.equals('') and !academyId.equals(0)">
+                and it.ACADEMY_ID = #{academyId}
+            </if>
+            <if test="unansweredOnly.equals(1)">
+                AND it.answer IS NULL
+            </if>
+    </select>
+    <select id="getUncheckedInquiry" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM
+            inquiry_tb it
+            LEFT OUTER JOIN academy_tb at ON (at.ACADEMY_ID = it.ACADEMY_ID)
+        WHERE
+            user_id = #{userId}
+            and answer_checked = 1
+    </select>
+</mapper>
