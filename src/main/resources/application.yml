@@ -1,6 +1,7 @@
 server:
   port: 8080
   serverAddress: compassback-production.up.railway.app
+  frontAddress: https://koreait-j-23-2-2.github.io/compass_front
 
 spring:
   datasource:

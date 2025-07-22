@@ -5,6 +5,7 @@ import com.aws.compass.jwt.JwtProvider;
 import com.aws.compass.repository.AuthMapper;
 import com.aws.compass.security.PrincipalUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
@@ -21,6 +22,9 @@ import java.net.URLEncoder;
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
+    @Value("${server.frontAddress}")
+    private String frontAddress;
+
     private final AuthMapper authMapper;
     private final JwtProvider jwtProvider;
 
@@ -34,7 +38,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
             String provider = defaultOAuth2User.getAttributes().get("provider").toString();
 
             // 회원가입이 안 되었을 때 OAuth2 계정 회원가입 페이지로 이동
-            response.sendRedirect("http://compassbucket.s3-website.ap-northeast-2.amazonaws.com/auth/detail/signup" +
+            response.sendRedirect(frontAddress + "/auth/detail/signup" +
                     "?oauth2Id=" + oauth2Id +
                     "&provider=" + provider);
             return;
@@ -44,7 +48,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         UsernamePasswordAuthenticationToken authenticationToken
                 = new UsernamePasswordAuthenticationToken(principalUser, null, principalUser.getAuthorities());
         String accessToken = jwtProvider.generateToken(authenticationToken);
-        response.sendRedirect("http://compassbucket.s3-website.ap-northeast-2.amazonaws.com/auth/oauth2/signin" +  // client로 token을 보낸다
+        response.sendRedirect(frontAddress + "/auth/oauth2/signin" +  // client로 token을 보낸다
                 "?token=" + URLEncoder.encode(accessToken));
     }
 }
