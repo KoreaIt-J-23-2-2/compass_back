@@ -22,7 +22,7 @@ spring:
         registration:
           kakao:
             clientId: 2dc5c2ec61e5efeb6b952c1b5d381821
-            #clientSecret: ${KAKAO_CLIENT_SECRET}
+            clientSecret: ${KAKAO_CLIENT_SECRET}
             redirectUri: https://compassback-production.up.railway.app/login/oauth2/code/kakao
             authorizationGrantType: authorization_code
             clientAuthenticationMethod: POST
