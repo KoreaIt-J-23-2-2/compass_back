@@ -29,7 +29,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/auth/**", "/api/option/**",
                         "/api/academies", "/api/academy/**",
                         "/api/review/**", "/api/purchase/**", "/api/academy/check/**",
-                        "/api/ad/academies/random")
+                        "/api/ad/academies/random", "/api/account/principal")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
