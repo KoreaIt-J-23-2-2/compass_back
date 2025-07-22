@@ -237,7 +237,7 @@
             at.FA_RDNDA,
             at.FA_RDNZC,
             at.FA_TELNO,
-            ait.logo_img,
+            MAX(ait.logo_img) AS logo_img,
             IFNULL(lt.LIKE_COUNT, 0) AS LIKE_COUNT,
             IFNULL(rt.AVG_SCORE, 0) AS AVG_SCORE
         FROM
