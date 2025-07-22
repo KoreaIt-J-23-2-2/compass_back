@@ -76,7 +76,7 @@ public class AccountService {
                     "<div>" +
                             "<h1>학습 나침반 이메일 인증 메일</h1>"+
                             "<p>이메일 인증을 완료하려면 아래의 버튼을 클릭하세요.</p>" +
-                            "<a href=\"https://" + serverAddress + "/api/account/auth/email?token=" + token + "\">인증하기</a>" +
+                            "<a href=\"" + serverAddress + "/api/account/auth/email?token=" + token + "\">인증하기</a>" +
                     "</div>", "utf-8", "html"
             );
             javaMailSender.send(mimeMailMessage);       //설정한 메시지를 sender를 통해 전달함

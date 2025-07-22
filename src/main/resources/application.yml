@@ -1,13 +1,13 @@
 server:
   port: 8080
-  serverAddress: compassback-production.up.railway.app
+  serverAddress: https://compassback-production.up.railway.app
   frontAddress: https://koreait-j-23-2-2.github.io/compass_front
 
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://ballast.proxy.rlwy.net:19354/compass
-    username: admin
+    username: root
     password: ${DB_PASSWORD}
   mail:
     host: smtp.gmail.com
@@ -24,14 +24,14 @@ spring:
           kakao:
             clientId: 2dc5c2ec61e5efeb6b952c1b5d381821
             clientSecret: ${KAKAO_CLIENT_SECRET}
-            redirectUri: https://compassback-production.up.railway.app/login/oauth2/code/kakao
+            redirectUri: ${server.serverAddress}/login/oauth2/code/kakao
             authorizationGrantType: authorization_code
             clientAuthenticationMethod: POST
             clientName: Kakao
           naver:
             clientId: i4eW_RUc74M3Ci96bJuG
             clientSecret: ${NAVER_CLIENT_SECRET}
-            redirectUri: https://compassback-production.up.railway.app/login/oauth2/code/naver
+            redirectUri: ${server.serverAddress}/login/oauth2/code/naver
             authorizationGrantType: authorization_code
             clientAuthenticationMethod: POST
             clientName: Naver
