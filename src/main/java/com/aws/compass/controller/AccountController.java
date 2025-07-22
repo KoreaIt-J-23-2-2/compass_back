@@ -8,7 +8,9 @@ import com.aws.compass.entity.User;
 import com.aws.compass.security.PrincipalUser;
 import com.aws.compass.service.AccountService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -24,11 +26,15 @@ public class AccountController {
     // 로그인 한 유저 정보 들고오기
     @GetMapping("/api/account/principal")
     public ResponseEntity<?> getPrincipal() {
-        PrincipalUser principalUser =
-                (PrincipalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = principalUser.getUser();
-        PrincipalRespDto principalRespDto = user.toPrincipalDto();
-        return ResponseEntity.ok(principalRespDto);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // 인증되지 않은 경우
+        if (authentication == null || !authentication.isAuthenticated()
+            || authentication.getPrincipal().equals("anonymousUser")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 401
+        }
+        PrincipalUser principalUser = (PrincipalUser) authentication.getPrincipal();
+        return ResponseEntity.ok(principalUser.getUser().toPrincipalDto());
     }
 
     // 개인 정보 수정
