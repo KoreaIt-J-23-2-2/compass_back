@@ -27,21 +27,24 @@ public class JwtAuthenticationFilter extends GenericFilter {
         String token = jwtProvider.getToken(bearerToken);
 
         try {
-            Authentication authentication = jwtProvider.getAuthentication(token);
-
-            //토큰이 유효하다면 SecurityContextHolder에 토큰 저장
-            if(authentication != null) {
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
-            } catch (Exception e) {
-                // 토큰이 만료 되었을 때 예외 처리
-                httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            if (token == null || token.isEmpty()) {
+                // 토큰이 없으면 인증처리 없이 다음 필터로 넘김
+                chain.doFilter(request, response);
                 return;
             }
-            chain.doFilter(request, response);
 
+            Authentication authentication = jwtProvider.getAuthentication(token);
+    
+            if(authentication != null) {
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        } catch (Exception e) {
+            httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
         }
 
+        chain.doFilter(request, response);
+    }
 }
 
 
