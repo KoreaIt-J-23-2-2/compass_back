@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @Component
 @RequiredArgsConstructor
@@ -50,6 +51,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String accessToken = jwtProvider.generateToken(authenticationToken);
         System.out.println("ACCESS TOKEN: " + accessToken); // 디버깅용
         response.sendRedirect(frontAddress + "/auth/oauth2/signin" +  // client로 token을 보낸다
-                "?token=" + URLEncoder.encode(accessToken, "UTF-8"));
+                "?token=" + URLEncoder.encode(accessToken, StandardCharsets.UTF_8));
     }
 }
