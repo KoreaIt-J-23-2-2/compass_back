@@ -48,7 +48,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         UsernamePasswordAuthenticationToken authenticationToken
                 = new UsernamePasswordAuthenticationToken(principalUser, null, principalUser.getAuthorities());
         String accessToken = jwtProvider.generateToken(authenticationToken);
+        System.out.println("ACCESS TOKEN: " + accessToken); // 디버깅용
         response.sendRedirect(frontAddress + "/auth/oauth2/signin" +  // client로 token을 보낸다
-                "?token=" + URLEncoder.encode(accessToken));
+                "?token=" + URLEncoder.encode(accessToken, "UTF-8"));
     }
 }
