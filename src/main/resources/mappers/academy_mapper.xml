@@ -318,7 +318,7 @@
             at.ACADEMY_ID
         ORDER BY
             CASE
-                WHEN #{classify} = '등록순' THEN ait.academy_info_id
+                WHEN #{classify} = '등록순' THEN MAX(ait.academy_info_id)
                 WHEN #{classify} = '좋아요순' THEN LIKE_COUNT
                 WHEN #{classify} = '별점순' THEN AVG_SCORE
                 ELSE ait.ACADEMY_ID
