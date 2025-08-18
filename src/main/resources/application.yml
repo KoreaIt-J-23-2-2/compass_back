@@ -1,13 +1,13 @@
 server:
   port: 8080
-  serverAddress: https://compassback-production.up.railway.app
+  serverAddress: https://ec2-3-34-44-250.ap-northeast-2.compute.amazonaws.com
   frontAddress: https://koreait-j-23-2-2.github.io/compass_front
 
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://ballast.proxy.rlwy.net:19354/compass
-    username: root
+    url: jdbc:mysql://compass-db.cz0cuiamu64l.ap-northeast-2.rds.amazonaws.com:3306/compass-db?useSSL=false&serverTimezone=UTC
+    username: admin
     password: ${DB_PASSWORD}
   mail:
     host: smtp.gmail.com
