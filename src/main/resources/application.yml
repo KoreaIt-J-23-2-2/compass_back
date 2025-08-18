@@ -1,6 +1,6 @@
 server:
   port: 8080
-  serverAddress: https://ec2-3-34-44-250.ap-northeast-2.compute.amazonaws.com
+  serverAddress: http://3.34.44.250
   frontAddress: https://koreait-j-23-2-2.github.io/compass_front
 
 spring:
