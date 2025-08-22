@@ -1,14 +1,17 @@
 server:
   port: 8080
-  serverAddress: http://3.34.44.250
+  serverAddress: https://3-34-44-250.sslip.io
   frontAddress: https://koreait-j-23-2-2.github.io/compass_front
 
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://compass-db.cz0cuiamu64l.ap-northeast-2.rds.amazonaws.com:3306/compass-db?useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://compass.cz0cuiamu64l.ap-northeast-2.rds.amazonaws.com:3306/compass?useSSL=false&serverTimezone=UTC
     username: admin
     password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
   mail:
     host: smtp.gmail.com
     port: 587
