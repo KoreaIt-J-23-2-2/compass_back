@@ -1,7 +1,7 @@
 server:
   port: 8080
-  serverAddress: https://3-34-44-250.sslip.io
-  frontAddress: https://koreait-j-23-2-2.github.io/compass_front
+  serverAddress: http://localhost:8080   #https://3-34-44-250.sslip.io
+  frontAddress: http://localhost:3000/compass_front  #https://koreait-j-23-2-2.github.io/compass_front
   use-forward-header: true
 
 spring:

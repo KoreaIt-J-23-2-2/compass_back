@@ -11,6 +11,7 @@ public class PrincipalRespDto { // 마이페이지에서 쓸 정보들 응답 dt
 
     private int userId;
     private String email;
+    private String password;
     private String oauth2Id;
     private String name;
     private String nickname;

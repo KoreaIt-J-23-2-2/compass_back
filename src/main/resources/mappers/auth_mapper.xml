@@ -2,10 +2,14 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.aws.compass.repository.AuthMapper">
+
+    <!-- User 매핑 -->
     <resultMap id="userMap" type="com.aws.compass.entity.User">
         <id property="userId" column="user_id"/>
         <result property="email" column="email"/>
+        <result property="password" column="password"/>
         <result property="oauth2Id" column="oauth2_id"/>
         <result property="name" column="name"/>
         <result property="nickname" column="nickname"/>
@@ -14,55 +18,76 @@
         <result property="enabled" column="enabled"/>
         <result property="roleId" column="role_id"/>
     </resultMap>
-    <insert id="saveUser">
+
+    <!-- 일반 회원가입 (LOCAL) -->
+    <insert id="saveLocalUser" parameterType="com.aws.compass.entity.User">
+        <![CDATA[
         insert into user_tb
-        values(
-            0,
-            #{email},
-            #{oauth2Id},
-            #{name},
-            #{nickname},
-            #{phone},
-            #{provider},
-            0,
-            1
-        )
+        (user_id, email, password, oauth2_id, name, nickname, phone, provider, enabled, role_id)
+        values
+        (0, #{email}, #{password}, null, #{name}, #{nickname}, #{phone}, #{provider}, #{enabled}, #{roleId})
+        ]]>
     </insert>
 
-    <select id="findUserByOauth2Id" resultMap="userMap">
-        select
-            user_id,
-            email,
-            oauth2_id,
-            name,
-            nickname,
-            phone,
-            provider,
-            enabled,
-            role_id
-        from
-            user_tb
-        where
-            oauth2_id = #{oauth2Id}
+    <!-- OAuth2 회원 최초 저장 -->
+    <insert id="saveUser" parameterType="com.aws.compass.entity.User">
+        <![CDATA[
+        insert into user_tb
+        (user_id, email, password, oauth2_id, name, nickname, phone, provider, enabled, role_id)
+        values
+        (0, #{email}, null, #{oauth2Id}, #{name}, #{nickname}, #{phone}, #{provider}, #{enabled}, #{roleId})
+        ]]>
+    </insert>
 
-    </select>
-    <select id="checkDuplicate"
-            parameterType="com.aws.compass.entity.User"
-            resultType="java.lang.Integer">
+    <!-- 이메일로 회원 조회 (로그인용) -->
+    <select id="findUserByEmail" parameterType="string" resultMap="userMap">
+        <![CDATA[
         select
-            (select
-                if(count(*) > 0, 1, 0)
-            from
-                user_tb
-            where
-                email = #{email}
-            )
-            + (select
-                if(count(*) > 0, 2, 0)
-            from
-                user_tb
-            where
-                nickname = #{nickname}
-            ) as result
+            user_id, email, password, oauth2_id, name, nickname, phone, provider, enabled, role_id
+        from user_tb
+        where email = #{email}
+        ]]>
     </select>
+
+    <!-- OAuth2 ID로 회원 조회 -->
+    <select id="findUserByOauth2Id" parameterType="string" resultMap="userMap">
+        <![CDATA[
+        select
+            user_id, email, password, oauth2_id, name, nickname, phone, provider, enabled, role_id
+        from user_tb
+        where oauth2_id = #{oauth2Id}
+        ]]>
+    </select>
+
+    <!-- OAuth2 추가정보 업데이트 -->
+    <update id="updateUserExtraByOauth2Id" parameterType="com.aws.compass.dto.auth.Oauth2SignupReqDto">
+        <![CDATA[
+        update user_tb
+        set name     = #{name},
+            nickname = #{nickname},
+            phone    = #{phone}
+        where oauth2_id = #{oauth2Id}
+        ]]>
+    </update>
+
+    <!-- 이메일/닉네임 중복 체크 (회원가입 시) -->
+    <select id="checkDuplicateByEmailAndNickname" resultType="int">
+        <![CDATA[
+        select
+            (select if(count(*) > 0, 1, 0) from user_tb where email = #{email})
+            +
+            (select if(count(*) > 0, 2, 0) from user_tb where nickname = #{nickname}) as result
+        ]]>
+    </select>
+
+    <!-- 닉네임 중복 체크 (본인 제외, OAuth2 추가정보용) -->
+    <select id="checkDuplicateByNicknameExcludingUser" resultType="int">
+        <![CDATA[
+        select if(count(*) > 0, 1, 0)
+        from user_tb
+        where nickname = #{nickname}
+          and user_id <> #{userId}
+        ]]>
+    </select>
+
 </mapper>
