@@ -1,0 +1,43 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main   # main 브랜치 푸시 시 배포
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Grant execute permission for mvnw
+        run: chmod +x mvnw
+
+      - name: Build JAR
+        run: ./mvnw clean package -DskipTests
+
+      - name: SCP JAR and Dockerfile to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "target/*.jar,Dockerfile"
+          target: "/home/ubuntu/compass"
+
+      - name: SSH to EC2 and deploy
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/compass
+            docker stop compass || true
+            docker rm compass || true
+            docker rmi compass_app || true
+            docker build -t compass_app .
+            docker run -d --name compass -p 8080:8080 compass_app
