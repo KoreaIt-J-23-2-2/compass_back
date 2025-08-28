@@ -1,7 +1,7 @@
 version: "3.8"
 services:
-  app:
-    build: .
+  compass:
+    image: compass_app
     container_name: compass
     ports:
       - "8080:8080"
