@@ -1,7 +1,7 @@
 version: "3.8"
 services:
-  app:
-    build: .
+  compass:
+    image: compass_app
     container_name: compass
     ports:
       - "8080:8080"
@@ -9,7 +9,7 @@ services:
       - .env
     environment:
       - JWT_SECRET=${JWT_SECRET}
-      - SPRING_DATASOURCE_URL=jdbc:mysql://compass.cz0cuiamu64l.ap-northeast-2.rds.amazonaws.com:3306/compass-db?useSSL=false&serverTimezone=UTC
+      - SPRING_DATASOURCE_URL=jdbc:mysql://compass.cz0cuiamu64l.ap-northeast-2.rds.amazonaws.com:3306/compass?useSSL=false&serverTimezone=UTC
       - SPRING_DATASOURCE_USERNAME=admin
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
       - SERVER_USE_FORWARD_HEADERS=true
