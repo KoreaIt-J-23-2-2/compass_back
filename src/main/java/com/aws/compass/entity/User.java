@@ -10,6 +10,7 @@ import lombok.*;
 public class User {
     private int userId;
     private String email;
+    private String password;
     private String oauth2Id;
     private String name;
     private String nickname;
@@ -23,6 +24,7 @@ public class User {
         return PrincipalRespDto.builder()
                 .userId(userId)
                 .email(email)
+                .password(password)
                 .oauth2Id(oauth2Id)
                 .name(name)
                 .nickname(nickname)
