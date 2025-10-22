@@ -23,6 +23,7 @@ public class AuthService {
     private final AuthMapper authMapper;
     private final PasswordEncoder passwordEncoder; // BCrypt
     private final JwtProvider jwtProvider;
+    private final FirebaseService firebaseService;
 
     /** 일반 회원가입 */
     public boolean signup(SignupReqDto dto) {
@@ -65,7 +66,11 @@ public class AuthService {
         String refreshToken = jwtProvider.generateRefreshToken(user);  // 필요 없으면 null 반환하도록 처리 가능
         long expiresIn = jwtProvider.getAccessTokenExpirySeconds();    // 선택
 
-        return new TokenRespDto("Bearer", accessToken, refreshToken, expiresIn);
+        // Firebase Custom Token 발급
+        String firebaseUid = "user_" + user.getUserId();
+        String firebaseToken = firebaseService.createCustomToken(firebaseUid);
+
+        return new TokenRespDto("Bearer", accessToken, refreshToken, expiresIn, firebaseToken);
     }
 
     /** OAuth2 로그인 후 추가정보 입력(프로필 완료) */

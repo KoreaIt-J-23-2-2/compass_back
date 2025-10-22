@@ -4,6 +4,7 @@ import com.aws.compass.entity.User;
 import com.aws.compass.jwt.JwtProvider;
 import com.aws.compass.repository.AuthMapper;
 import com.aws.compass.security.PrincipalUser;
+import com.aws.compass.service.FirebaseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,6 +29,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final AuthMapper authMapper;
     private final JwtProvider jwtProvider;
+    private final FirebaseService firebaseService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -49,8 +51,12 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         UsernamePasswordAuthenticationToken authenticationToken
                 = new UsernamePasswordAuthenticationToken(principalUser, null, principalUser.getAuthorities());
         String accessToken = jwtProvider.generateToken(authenticationToken);
-        System.out.println("ACCESS TOKEN: " + accessToken); // 디버깅용
+        // Firebase Custom Token 발급
+        String firebaseUid = "user_" + user.getUserId();
+        String firebaseToken = firebaseService.createCustomToken(firebaseUid);
+
         response.sendRedirect(frontAddress + "/auth/oauth2/signin" +  // client로 token을 보낸다
-                "?token=" + URLEncoder.encode(accessToken, StandardCharsets.UTF_8));
+                "?token=" + URLEncoder.encode(accessToken, StandardCharsets.UTF_8) +
+                "&firebaseToken=" + URLEncoder.encode(firebaseToken, StandardCharsets.UTF_8));
     }
 }

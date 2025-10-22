@@ -17,7 +17,14 @@
 	    <java.version>17</java.version>
 	</properties>
 	<dependencies>
-		<dependency>
+        <!-- firebase -->
+        <dependency>
+            <groupId>com.google.firebase</groupId>
+            <artifactId>firebase-admin</artifactId>
+            <version>9.5.0</version> <!-- 최신 버전으로 변경 가능 -->
+        </dependency>
+
+        <dependency>
 		    <groupId>org.springframework.boot</groupId>
 		    <artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
