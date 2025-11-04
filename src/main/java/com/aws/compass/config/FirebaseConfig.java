@@ -3,14 +3,15 @@ package com.aws.compass.config;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
+
 import java.io.InputStream;
 import java.util.Base64;
 
+@Configuration
 public class FirebaseConfig {
 
     private String bucketName = "compass-firebase-c24d5.firebasestorage.app";
